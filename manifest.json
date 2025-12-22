@@ -2,11 +2,12 @@
   "manifest_version": 3,
   "name": "YouTube Sentiment Analysis",
   "version": "1.0",
-  "description": "Sending random text to a sentiment analysis API and logging the response.",
+  "description": "checking the valid URL",
   "action": {
     "default_popup": "popup.html"
   },
-  "permissions": [
-    "scripting"
+  "permissions": ["tabs"],
+  "host_permissions": [
+    "http://localhost:5000/*"
   ]
 }
