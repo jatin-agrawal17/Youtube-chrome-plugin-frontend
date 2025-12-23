@@ -2,12 +2,17 @@
   "manifest_version": 3,
   "name": "YouTube Sentiment Analysis",
   "version": "1.0",
-  "description": "checking the valid URL",
+  "description": "Analyzes YouTube video comments for sentiment.",
   "action": {
     "default_popup": "popup.html"
   },
-  "permissions": ["tabs"],
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
   "host_permissions": [
-    "http://localhost:5000/*"
+    "http://localhost/*",
+    "https://www.googleapis.com/*"
   ]
 }
