@@ -1,7 +1,7 @@
 // popup.js
 document.addEventListener("DOMContentLoaded", async () => {
   const outputDiv = document.getElementById("output");
-  const API_KEY = 'YOUR API KEY';
+  const API_KEY = 'Your_YouTube_API_Key_Here';
   const API_URL = 'http://localhost:5000';
 
   // ✅ Sentiment storage
@@ -55,6 +55,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   URL.revokeObjectURL(url);
 }
 
+document.addEventListener("click", (e) => {
+  if (e.target && e.target.id === "exportCsvBtn") {
+    exportToCSV(window.latestPredictions, window.latestComments);
+  }
+});
+
+document.addEventListener("click", async (e) => {
+  if (e.target && e.target.id === "exportPdfBtn") {
+    const res = await fetch(`${API_URL}/generate_pdf_report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(window.latestPdfPayload)
+    });
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "YouTube_Comment_Analysis_Report.pdf";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+});
+
 
 
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
@@ -79,6 +105,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     outputDiv.innerHTML += `<p>Fetched ${comments.length} comments. Performing sentiment analysis...</p>`;
     const predictions = await getSentimentPredictions(comments);
+
+
+
+    window.latestPredictions = predictions;
+    window.latestComments = comments;
+
+
+
+
+
     if (!predictions) return;
 
     const sentimentCounts = { "1": 0, "0": 0, "-1": 0 };
@@ -191,9 +227,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       </div>
     `;
 
-    document.getElementById("exportCsvBtn").addEventListener("click", () => {
-  exportToCSV(predictions, comments);
-});
+//     document.getElementById("exportCsvBtn").addEventListener("click", () => {
+//   exportToCSV(predictions, comments);
+// });
 
 
     outputDiv.innerHTML += `
@@ -213,38 +249,52 @@ document.addEventListener("DOMContentLoaded", async () => {
   </div>
 `;
 
-    document.getElementById("exportPdfBtn").addEventListener("click", async () => {
-      const payload = {
-        summary: {
-          totalComments,
-          uniqueCommenters,
-          avgWordLength,
-          normalizedSentimentScore
-        },
-        sentimentCounts,
-        sentimentSamples: {
-          positive: sentimentMap.positive.slice(0, 10),
-          negative: sentimentMap.negative.slice(0, 10),
-          neutral: sentimentMap.neutral.slice(0, 10)
-        }
-      };
+    // document.getElementById("exportPdfBtn").addEventListener("click", async () => {
+    //   const payload = {
+    //     summary: {
+    //       totalComments,
+    //       uniqueCommenters,
+    //       avgWordLength,
+    //       normalizedSentimentScore
+    //     },
+    //     sentimentCounts,
+    //     sentimentSamples: {
+    //       positive: sentimentMap.positive.slice(0, 10),
+    //       negative: sentimentMap.negative.slice(0, 10),
+    //       neutral: sentimentMap.neutral.slice(0, 10)
+    //     }
+    //   };
 
-      const res = await fetch(`${API_URL}/generate_pdf_report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+    //   const res = await fetch(`${API_URL}/generate_pdf_report`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(payload)
+    //   });
 
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
+    //   const blob = await res.blob();
+    //   const url = URL.createObjectURL(blob);
 
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "YouTube_Comment_Analysis_Report.pdf";
-      a.click();
+    //   const a = document.createElement("a");
+    //   a.href = url;
+    //   a.download = "YouTube_Comment_Analysis_Report.pdf";
+    //   a.click();
 
-      URL.revokeObjectURL(url);
-    });
+    //   URL.revokeObjectURL(url);
+    // });
+    window.latestPdfPayload = {
+  summary: {
+    totalComments,
+    uniqueCommenters,
+    avgWordLength,
+    normalizedSentimentScore
+  },
+  sentimentCounts,
+  sentimentSamples: {
+    positive: sentimentMap.positive.slice(0, 10),
+    negative: sentimentMap.negative.slice(0, 10),
+    neutral: sentimentMap.neutral.slice(0, 10)
+  }
+};
 
 
 
