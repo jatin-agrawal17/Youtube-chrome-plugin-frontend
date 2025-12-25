@@ -1,8 +1,8 @@
 // popup.js
 document.addEventListener("DOMContentLoaded", async () => {
   const outputDiv = document.getElementById("output");
-  const API_KEY = 'Your_YouTube_API_Key_Here';
-  const API_URL = 'http://localhost:5000';
+  const API_KEY = 'YOUR_API_KEY_HERE'; // Replace with your YouTube Data API key
+  const API_URL = 'http://44.222.191.36:8888';
 
   // ✅ Sentiment storage
   const sentimentMap = {
